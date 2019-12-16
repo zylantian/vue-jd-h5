@@ -5,7 +5,7 @@ Vue.use(Router)
 
 let routes = [{
   path: '/',
-  redirect: '/index'
+  redirect: '/classify'
 }]
 const routerContext = require.context('./modules', true, /\.js$/)
 routerContext.keys().forEach(route => {
@@ -34,13 +34,13 @@ const router = new Router({
 
 var link = document.querySelector("link[rel*='icon']") || document.createElement('link')
 router.beforeEach((to, from, next) => {
-  if (to.path.includes('coinPay')) {
+  /* if (to.path.includes('coinPay')) {
     document.title = '币付宝'
     link.href = 'http://jc.cmall.world/coinPay_favicon.ico'
   } else {
-    document.title = '链猫商城'
+    document.title = '建研云'
     link.href = 'http://jc.cmall.world/favicon.ico'
-  }
+  } */
   document.getElementsByTagName('head')[0].appendChild(link)
   next()
 })

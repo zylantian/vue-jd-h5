@@ -4,7 +4,6 @@
       <span slot="left" @click="$router.go(-1)">
         <svg-icon icon-class="gray-btn"></svg-icon>
       </span>
-      <span slot="right" @click="$router.push('/register/emailRegister')">邮箱注册</span>
     </cm-header>
     <div class="mall-logo">
       <img src="../../assets/image/setting/logo.png" />

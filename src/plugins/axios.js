@@ -88,7 +88,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   // 请求成功
   response => {
-    if (response.data.code === 0) {
+    if (response.data.code === 200) {
       return Promise.resolve(response)
     } else {
       return Promise.reject(response)

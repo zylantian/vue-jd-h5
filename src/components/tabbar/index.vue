@@ -8,14 +8,14 @@
         inactive-color="#949497"
         style="z-index: 100;"
       >
-        <van-tabbar-item name="index" to="/index">
+        <!--<van-tabbar-item name="index" to="/index">
           <span>首页</span>
           <img
             slot="icon"
             slot-scope="props"
             :src="props.active ? icon_home.active : icon_home.normal"
           />
-        </van-tabbar-item>
+        </van-tabbar-item>-->
         <van-tabbar-item name="classify" to="/classify">
           <span>分类</span>
           <img

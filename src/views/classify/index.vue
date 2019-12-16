@@ -36,15 +36,21 @@
                 <div v-for="(products,index) in category.children" :key="index">
                   <p class="goods-title">{{products.label}}</p>
                   <div class="category-list">
-                    <div
+                    <!--<div
                       class="product-item"
                       @click="selectProduct(product)"
                       v-for="(product,index) in products.children"
                       :key="index"
-                    >
-                      <img class="item-img" v-lazy="product.imageUrl" />
-                      <p class="product-title">{{product.label}}</p>
-                    </div>
+                    >-->
+                     <!-- <img class="item-img" v-lazy="product.imageUrl" />-->
+                      <img
+                        @click="selectProduct(products)"
+                        class="item-img"
+                        v-lazy="products.imageUrl"
+                        v-if="products.imageUrl"
+                      />
+                      <!--<p class="product-title">{{products.label}}</p>-->
+                    <!--</div>-->
                   </div>
                 </div>
               </div>
@@ -58,63 +64,64 @@
 </template>
 
 <script>
-import ListScroll from "../../components/scroll/ListScroll";
+import ListScroll from '../../components/scroll/ListScroll'
 export default {
   components: {
     ListScroll
   },
-  name: "classify",
-  data() {
+  name: 'classify',
+  data () {
     return {
       tags: [],
       currentIndex: 0,
       loading: true,
       categoryData: [],
       templateCategoryData: []
-    };
+    }
   },
   // activated() {
   //   this.getGoodsList();
   // },
-  created() {
-    this.getGoodsList();
+  created () {
+    this.getGoodsList()
   },
   methods: {
     // 获取分类
-    getGoodsList() {
-      this.loading = true;
-      this.$http.get(`/api/product/category`).then(response => {
-        const categoryData = response.data.content;
-        this.categoryData = categoryData;
-        this.loading = false;
-      });
+    getGoodsList () {
+      this.loading = true
+      this.$http.get(`/open/product/category`).then(response => {
+        console.log(response.data.content)
+        const categoryData = response.data.content
+        this.categoryData = categoryData
+        this.loading = false
+      })
     },
-    handleSearch() {
-      this.$router.push("/search");
+    handleSearch () {
+      this.$router.push('/search')
     },
-    //左侧菜单和右侧区域联动
-    selectMenu($index) {
-      this.currentIndex = $index;
+    // 左侧菜单和右侧区域联动
+    selectMenu ($index) {
+      this.currentIndex = $index
     },
-    //动态设置searc-wrap的高
-    setSearchWrapHeight() {
-      let $screenHeight = document.documentElement.clientHeight;
-      this.$refs.searchWrap.style.height = $screenHeight - 100 + "px";
+    // 动态设置searc-wrap的高
+    setSearchWrapHeight () {
+      let $screenHeight = document.documentElement.clientHeight
+      this.$refs.searchWrap.style.height = $screenHeight - 100 + 'px'
     },
-    selectProduct(product) {
+    selectProduct (product) {
       this.$router.push({
-        path: "/classify/classifySearch",
+        path: '/classify/classifySearch',
         query: { categoryId: product.value, product: product }
-      });
+      })
     }
   },
-  mounted() {
+  mounted () {
     if (!this.loading) {
-      this.setSearchWrapHeight();
+      this.setSearchWrapHeight()
     }
-    this.$eventBus.$emit("changeTag", 1);
+    this.$eventBus.$emit('changeTag', 1)
   }
-};
+}
 </script>
 
 <style scoped lang="scss">
@@ -203,14 +210,23 @@ export default {
               font-weight: 500;
               padding: 40px 0;
             }
+            .item-img {
+              width: 65px;
+              height: 80px;
+            }
+            .item-img[lazy="loading"] {
+              background: #949497 url("../../assets/icons/pre-view.png")
+              no-repeat center center;
+              background-size: 100% 100%;
+            }
             .product-item {
               width: 33%;
               margin-bottom: 20px;
               text-align: center;
               font-size: 30px;
               .item-img {
-                width: 65px;
-                height: 80px;
+                width: 50px;
+                height: 60px;
               }
               .item-img[lazy="loading"] {
                 background: #949497 url("../../assets/icons/pre-view.png")
