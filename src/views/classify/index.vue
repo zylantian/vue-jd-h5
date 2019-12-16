@@ -45,11 +45,11 @@
                             <span class="goods-div">{{item.subTitle}}</span>
                             <div class="goods-desc">
                               <span class="goods-price">
-                                <i>￥{{item.productCnyPrice}}</i>
+                                <i>￥{{item.price}}</i>
                               </span>
                             </div>
                             <div class="goods-count-sale">
-                               <span class="goods-monthlySalesQuantity">月销量：{{item.monthlySalesQuantity}}</span>
+                               <span class="goods-monthlySalesQuantity">销量：{{item.sale}}</span>
                             </div>
                           </div>
                         </li>
