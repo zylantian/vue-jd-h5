@@ -1,13 +1,13 @@
 <template>
   <div class="classify">
     <header class="home-header">商品分类</header>
-     <van-loading
-          class="home-loading"
-          v-show="loading"
-          color="#EC3924"
-          size="25px"
-          type="spinner"
-        />
+    <van-loading
+      class="home-loading"
+      v-show="loading"
+      color="#EC3924"
+      size="25px"
+      type="spinner"
+    />
     <section class="search-wrap" ref="searchWrap">
       <list-scroll :scroll-data="categoryData" class="nav-side-wrapper">
         <ul class="nav-side">
@@ -33,24 +33,28 @@
                   v-lazy="category.imageUrl"
                   v-if="category.imageUrl"
                 />
-                <div v-for="(products,index) in category.children" :key="index">
-                  <p class="goods-title">{{products.label}}</p>
-                  <div class="category-list">
-                    <!--<div
-                      class="product-item"
-                      @click="selectProduct(product)"
-                      v-for="(product,index) in products.children"
-                      :key="index"
-                    >-->
-                     <!-- <img class="item-img" v-lazy="product.imageUrl" />-->
-                      <img
-                        @click="selectProduct(products)"
-                        class="item-img"
-                        v-lazy="products.imageUrl"
-                        v-if="products.imageUrl"
-                      />
-                      <!--<p class="product-title">{{products.label}}</p>-->
-                    <!--</div>-->
+                <div v-for="(sencondCategory, index) in category.children" :key="index">
+                  <p class="goods-label">{{sencondCategory.label}}</p>
+                  <div class="goods-box">
+                    <ul class="goods-content">
+                      <template v-for="(item,index) in sencondCategory.productList">
+                        <li :key="index" class="goods-item" >
+                          <img class="product-image" v-if="item.pic" v-lazy="item.pic"/>
+                          <div class="goods-layout">
+                            <div class="goods-title">{{item.name}}</div>
+                            <span class="goods-div">{{item.subTitle}}</span>
+                            <div class="goods-desc">
+                              <span class="goods-price">
+                                <i>￥{{item.productCnyPrice}}</i>
+                              </span>
+                            </div>
+                            <div class="goods-count-sale">
+                               <span class="goods-monthlySalesQuantity">月销量：{{item.monthlySalesQuantity}}</span>
+                            </div>
+                          </div>
+                        </li>
+                      </template>
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -183,7 +187,7 @@ export default {
         .swiper-slide {
           width: 100%;
           padding-top: 20px;
-          .goods-title {
+          .goods-label {
             font-size: 14px;
             color: #ec3924;
             font-weight: 600;
@@ -242,9 +246,104 @@ export default {
               }
             }
           }
+          .goods-box {
+            padding: 16px;
+            .good-things {
+              font-size: 18px;
+              color: #ec3924;
+            }
+            .goods-content {
+              display: flex;
+              justify-content: space-between;
+              flex-wrap: wrap;
+              .goods-item {
+                // display: inline-block;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                width: 165px;
+                border-radius: 8px;
+                margin-top: 10px;
+                // padding-right: 10px;
+                background-color: white;
+                .product-image {
+                  width: 165px;
+                  height: 196px;
+                }
+              }
+              li:nth-of-type(even) {
+                padding-right: 0;
+              }
+              .goods-layout {
+                width: 165px;
+                padding: 0 10px;
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: column;
+                .goods-title {
+                  color: #3a3a3a;
+                  font-size: 14px;
+                  font-weight: 700;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
+                .goods-div {
+                  color: #949497;
+                  font-size: 11px;
+                }
+                .goods-desc {
+                  background-color: #fff;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding-bottom: 12px;
+                  padding-top: 12px;
+                  .goods-price {
+                    width: 100%;
+                    font-size: 14px;
+                    color: #ec3924;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    .force-value {
+                      margin-left: 7px;
+                      color: white;
+                      border-radius: 20px 20px;
+                      background-color: #ec3924;
+                      display: inline-block;
+                      font-size: 7px;
+                      line-height: 17px;
+                      text-align: center;
+                      min-width: 55px;
+                      height: 17px;
+                      padding: 0 3px;
+                    }
+                  }
+                }
+                .goods-count-sale {
+                  background-color: #fff;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding-bottom: 12px;
+                  color: #949497;
+                  font-size: 11px;
+
+                  .goods-monthlySalesQuantity {
+                    font-size: 11px;
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
+  }
+  .goods-all {
+    padding-top: 10px;
   }
 }
 </style>
