@@ -1,13 +1,13 @@
 <template>
   <div class="classify">
     <header class="home-header">商品分类</header>
-    <van-loading
-      class="home-loading"
-      v-show="loading"
-      color="#EC3924"
-      size="25px"
-      type="spinner"
-    />
+     <van-loading
+          class="home-loading"
+          v-show="loading"
+          color="#EC3924"
+          size="25px"
+          type="spinner"
+        />
     <section class="search-wrap" ref="searchWrap">
       <list-scroll :scroll-data="categoryData" class="nav-side-wrapper">
         <ul class="nav-side">
@@ -22,7 +22,7 @@
           </li>
         </ul>
       </list-scroll>
-      <list-scroll class="search-content" :scroll-data="categoryData">
+      <div class="search-content">
         <div class="swiper-container">
           <div class="swiper-wrapper">
             <template v-for="(category,index) in categoryData">
@@ -33,35 +33,31 @@
                   v-lazy="category.imageUrl"
                   v-if="category.imageUrl"
                 />
-                <div v-for="(sencondCategory, index) in category.children" :key="index">
-                  <p class="goods-label">{{sencondCategory.label}}</p>
-                  <div class="goods-box">
-                    <ul class="goods-content">
-                      <template v-for="(item,index) in sencondCategory.productList">
-                        <li :key="index" class="goods-item" >
-                          <img class="product-image" v-if="item.pic" v-lazy="item.pic"/>
-                          <div class="goods-layout">
-                            <div class="goods-title">{{item.name}}</div>
-                            <span class="goods-div">{{item.subTitle}}</span>
-                            <div class="goods-desc">
-                              <span class="goods-price">
-                                <i>￥{{item.price}}</i>
-                              </span>
-                            </div>
-                            <div class="goods-count-sale">
-                               <span class="goods-monthlySalesQuantity">销量：{{item.sale}}</span>
-                            </div>
-                          </div>
-                        </li>
-                      </template>
-                    </ul>
+                <div v-for="(products,index) in category.children" :key="index">
+                  <p class="goods-title">{{products.label}}</p>
+                  <div class="category-list">
+                    <template v-for="(product,index) in products.productList" >
+                    <div :key="index" class="product-item"  @click="handleGoToProduct(product)">
+                      <img class="item-img" v-lazy="product.pic" />
+                        <div class="goods-title">{{product.name}}</div>
+                        <span class="goods-div">{{product.subTitle}}</span>
+                        <div class="goods-desc">
+                           <span class="goods-price">
+                             <i>￥{{product.price}}</i>
+                           </span>
+                        </div>
+                        <div class="goods-count-sale">
+                          <span class="goods-monthlySalesQuantity">销量：{{product.sale}}</span>
+                        </div>
+                    </div>
+                    </template>
                   </div>
                 </div>
               </div>
             </template>
           </div>
         </div>
-      </list-scroll>
+      </div>
     </section>
     <tabbar></tabbar>
   </div>
@@ -117,6 +113,12 @@ export default {
         path: '/classify/classifySearch',
         query: { categoryId: product.value, product: product }
       })
+    },
+    handleGoToProduct (item) {
+      this.$router.push({
+        path: `/product/index`,
+        query: { productId: item.id }
+      })
     }
   },
   mounted () {
@@ -129,158 +131,121 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../styles/mixin.scss";
-.classify {
-  height: 100%;
-  background-color: #fff;
-  .home-header {
-    font-size: 18px;
-    color: #3a3a3a;
-    font-weight: 600;
-    text-align: center;
-    line-height: 50px;
-  }
-  .home-loading {
-    text-align: center;
-  }
-  .search-wrap {
-    @include fj;
-    width: 100%;
-    background: #fff;
-    .nav-side-wrapper {
-      width: 88px;
-      height: 100%;
-      overflow: hidden;
-      .nav-side {
-        width: 100%;
-        @include boxSizing;
-        background: #f8f8f8;
-        li {
+  @import "../../styles/mixin.scss";
+  .classify {
+    height: 100%;
+    background-color: #fff;
+    .home-header {
+      font-size: 18px;
+      color: #3a3a3a;
+      font-weight: 600;
+      text-align: center;
+      line-height: 50px;
+    }
+    .home-loading {
+      text-align: center;
+    }
+    .search-wrap {
+      @include fj;
+      width: 100%;
+      background: #fff;
+      .nav-side-wrapper {
+        width: 88px;
+        height: 100%;
+        overflow: hidden;
+        .nav-side {
           width: 100%;
-          height: 77px;
-          text-align: center;
-          font-weight: 600;
-          font-size: 14px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          color: #949497;
-          flex-direction: column;
-          &.active {
-            color: #ec3924;
-            border-left: 3px solid transparent;
-            border-color: #ec3924;
-            background: #fff;
+          @include boxSizing;
+          background: #f8f8f8;
+          li {
+            width: 100%;
+            height: 77px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #949497;
+            flex-direction: column;
+            &.active {
+              color: #ec3924;
+              border-left: 3px solid transparent;
+              border-color: #ec3924;
+              background: #fff;
+            }
           }
         }
       }
-    }
-    .search-content {
-      width: 80%;
-      height: 100%;
-      padding: 0 16px;
-      background: #fff;
-      padding-bottom: 30px;
-      @include boxSizing;
-      .swiper-container {
-        width: 100%;
-        .swiper-slide {
+      .search-content {
+        width: 80%;
+        height: 100%;
+        padding: 0 16px;
+        background: #fff;
+        padding-bottom: 30px;
+        @include boxSizing;
+        .swiper-container {
           width: 100%;
-          padding-top: 20px;
-          .goods-label {
-            font-size: 14px;
-            color: #ec3924;
-            font-weight: 600;
-            padding-bottom: 10px;
-          }
-          .category-main-img {
+          .swiper-slide {
             width: 100%;
-            border-radius: 8px;
-            height: 107px;
-          }
-          .category-main-img[lazy="loading"] {
-            background: #949497 url("../../assets/icons/pre-view.png") no-repeat
-              center center;
-            background-size: 100% 100%;
-          }
-          .category-list {
-            display: flex;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-            width: 100%;
-            .catogory-title {
+            padding-top: 20px;
+            .goods-title {
+              font-size: 14px;
+              color: #ec3924;
+              font-weight: 600;
+              padding-bottom: 10px;
+            }
+            .category-main-img {
               width: 100%;
-              font-size: 34px;
-              font-weight: 500;
-              padding: 40px 0;
+              border-radius: 8px;
+              height: 107px;
             }
-            .item-img {
-              width: 65px;
-              height: 80px;
-            }
-            .item-img[lazy="loading"] {
-              background: #949497 url("../../assets/icons/pre-view.png")
-              no-repeat center center;
+            .category-main-img[lazy="loading"] {
+              background: #949497 url("../../assets/icons/pre-view.png") no-repeat
+              center center;
               background-size: 100% 100%;
             }
-            .product-item {
-              width: 33%;
-              margin-bottom: 20px;
-              text-align: center;
-              font-size: 30px;
+            .category-list {
+              display: flex;
+              flex-wrap: wrap;
+              flex-shrink: 0;
+              width: 100%;
+              .catogory-title {
+                width: 100%;
+                font-size: 34px;
+                font-weight: 500;
+                padding: 40px 0;
+              }
               .item-img {
-                width: 50px;
-                height: 60px;
+                width: 65px;
+                height: 80px;
               }
               .item-img[lazy="loading"] {
                 background: #949497 url("../../assets/icons/pre-view.png")
-                  no-repeat center center;
+                no-repeat center center;
                 background-size: 100% 100%;
               }
-              .product-title {
-                color: #3a3a3a;
-                font-size: 11px;
-                font-weight: 600;
-                // width: 50%;
-                white-space: nowrap;
-              }
-            }
-          }
-          .goods-box {
-            padding: 16px;
-            .good-things {
-              font-size: 18px;
-              color: #ec3924;
-            }
-            .goods-content {
-              display: flex;
-              justify-content: space-between;
-              flex-wrap: wrap;
-              .goods-item {
-                // display: inline-block;
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
-                align-items: center;
-                width: 165px;
-                border-radius: 8px;
-                margin-top: 10px;
-                // padding-right: 10px;
-                background-color: white;
-                .product-image {
-                  width: 165px;
-                  height: 196px;
+              .product-item {
+                width: 50%;
+                margin-bottom: 20px;
+                text-align: left;
+                font-size: 30px;
+                .item-img {
+                  width: 110px;
+                  height: 150px;
                 }
-              }
-              li:nth-of-type(even) {
-                padding-right: 0;
-              }
-              .goods-layout {
-                width: 165px;
-                padding: 0 10px;
-                display: flex;
-                justify-content: flex-start;
-                flex-direction: column;
+                .item-img[lazy="loading"] {
+                  background: #949497 url("../../assets/icons/pre-view.png")
+                  no-repeat center center;
+                  background-size: 100% 100%;
+                }
+                .product-title {
+                  color: #3a3a3a;
+                  font-size: 11px;
+                  font-weight: 600;
+                  // width: 50%;
+                  white-space: nowrap;
+                }
                 .goods-title {
                   color: #3a3a3a;
                   font-size: 14px;
@@ -342,8 +307,4 @@ export default {
       }
     }
   }
-  .goods-all {
-    padding-top: 10px;
-  }
-}
 </style>
