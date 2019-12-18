@@ -1,26 +1,20 @@
-const state = {
-  count: 0
-}
-
-// getters
-const getters = {
-}
-
-// actions
-const actions = {
-}
-
-// mutations
-const mutations = {
-  addToCart (state) {
-    state.count++
+const cart = {
+  state: {
+    count: 0
+  },
+  getters: {
+  },
+  actions: {
+    AddCart ({ commit }) {
+      commit('addToCart')
+    }
+  },
+  // mutations
+  mutations: {
+    addToCart (state) {
+      state.count++
+    }
   }
 }
 
-export default {
-  namespaced: true,
-  state,
-  getters,
-  actions,
-  mutations
-}
+export default cart

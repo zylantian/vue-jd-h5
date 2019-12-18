@@ -48,6 +48,7 @@ export default {
     handleUserLogin () {
       this.$http.post(`/api/user/login`, this.loginForm).then(response => {
         if (response.data.code === 0) {
+          // 登录成功后应该查看购物车的数量 TODO
           localStorage.setItem('token', response.data.content.token)
           this.$router.push('/index')
         } else {

@@ -41,27 +41,26 @@
           @change="handleMerchantCheckboxGroup(shopCart)"
           v-model="shopCart.merchantCheckboxGroup"
         >
-          <ul v-for="(item, i) in shopCart.merchantItemList" :key="i">
+          <ul v-for="(item, i) in shopCart" :key="i">
             <div class="order-info">
               <li class="check-item">
                 <van-checkbox :key="i" checked-color="#91C95B" :name="item"></van-checkbox>
               </li>
-              <img v-lazy="item.productImg" />
+              <img v-lazy="item.productPic" />
               <li class="order-detail">
                 <ul>
                   <li class="info-one">
                     <span>{{item.productName}}</span>
                   </li>
                   <li class="info-two">
-                    <span>{{item.fullName}}</span>
+                    <span>{{item.productSubTitle}}</span>
                   </li>
                 </ul>
                 <div class="info-count">
-                  <span>￥{{item.productPrice}}</span>
+                  <span>￥{{item.price}}</span>
                   <van-stepper
                     v-model="item.quantity"
                     integer
-                    :max="item.stock"
                     @change="handleGoodsCountChange(item)"
                   />
                 </div>
@@ -211,7 +210,7 @@ export default {
     },
 
     initData () {
-      this.$http.get(`/api/cart/list`).then(response => {
+      this.$http.get(`/open/cart/list`).then(response => {
         this.shopCartArray = response.data.content
         if (this.shopCartArray.length === 0) {
           this.clearCart = true

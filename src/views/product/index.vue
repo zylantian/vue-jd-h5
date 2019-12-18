@@ -9,282 +9,107 @@
     <span class="btn-left" @click="$router.go(-1)">
       <svg-icon icon-class="green-btn"></svg-icon>
     </span>
-    <section v-if="isSpike" class="progress-bar">
-      <ul class="progress-left">
-        <li class="spike-price">
-          <span class="true-price">￥1498.00</span>
-          <span class="exchange-rate">1688USDT≈5600CM</span>
-        </li>
-        <li class="spike-bottom">
-          <del class="old-price">￥1498.00</del>
-          <progress class="lm-progress" value="22" max="100"></progress>
-        </li>
-      </ul>
-      <ul class="progress-right">
-        <div class="right-content">
-          <li class="end-time">
-            <i>距结束还剩:</i>
-          </li>
-          <li class="time-value">
-            <i>18:26:50</i>
-          </li>
-        </div>
-      </ul>
-    </section>
     <ul class="product-content">
       <li class="product-title">
         <div class="text-left">
-          <span v-if="detailForm.calculate" class="force-value">{{detailForm.calculate}}算力值</span>
-          {{detailForm.productName}}
+          {{detailForm.name}}
         </div>
-        <span class="heart-full" @click="handleIsLise(detailForm.productId)">
-          <svg-icon v-if="isLike" icon-class="heart-full"></svg-icon>
-          <svg-icon v-else icon-class="heart-null"></svg-icon>
-        </span>
       </li>
       <li class="product-info">
-        <b class="product-price">￥{{detailForm.productCnyPrice}}</b>
-        <i>邮费：{{detailForm.logisticsDefaultPrice}}</i>
-        <i>月销：{{detailForm.monthlySalesQuantity||0}}</i>
-      </li>
-
-      <li class="item-info">
-        <van-field label="发货地" disabled :placeholder="detailForm.shipAddress">
-          <span slot="left-icon" class="anchor-point">
-            <svg-icon icon-class="anchor-point"></svg-icon>
-          </span>
-        </van-field>
-      </li>
-      <li class="item-info">
-        <van-field label="品牌" disabled :placeholder="detailForm.brandName" />
-      </li>
-      <li class="item-info" @click="handleShowSpecs">
-        <van-field label="选择" disabled :placeholder="handleProductSpeces()"></van-field>
-        <van-icon name="arrow" />
-      </li>
-      <li class="store-info">
-        <div class="store-detail" @click="handleStoreName">
-          <img v-lazy="detailForm.shopLogo" class="store-header" />
-          <span class="store-name">{{detailForm.shopName}}</span>
-        </div>
-        <div class="store-btn">
-          <svg-icon icon-class="message-round"></svg-icon>
-          <van-button size="small" @click="handleConnectStore" type="danger">进店逛逛</van-button>
-        </div>
+        <b class="product-price">￥{{detailForm.price}}</b>
+        <i>销量：{{detailForm.sale||0}}</i>
       </li>
     </ul>
     <div class="item-details">
       <span @click="handleViewDetail">宝贝详情</span>
-      <div v-html="detailForm.productDetail" v-show="showDetail" class="html-class"></div>
+      <div v-html="detailForm.detailMobileHtml" v-show="showDetail" class="html-class"></div>
     </div>
-    <van-sku
-      @sku-selected="skuSelected"
-      v-model="show"
-      class="product-sku"
-      :sku="sku"
-      close-on-click-overlay
-      hide-stock
-      :goods="goods"
-      :goods-id="goodsId"
-      @buy-clicked="handleToBuy"
-      @add-cart="handleAddToCart"
-    >
-      <template slot="sku-header-price" slot-scope="props">
-        <div class="van-sku__goods-price">
-          <span class="van-sku__price-symbol">￥</span>
-          <span class="van-sku__price-num">{{ parseFloat((props.price*100).toPrecision(12)) }}</span>
-        </div>
-        <span class="sku-calculate" v-if="calculate">{{calculate}}倍算力值</span>
-        <div class="van-sku-header-item" v-show="stockNum">
-          <span class="van-sku__stock" v-if="stockNum">剩余{{stockNum}}件</span>
-        </div>
-        <div class="van-sku-header-item">
-          <span class="van-sku__stock">选择：{{handleProductSpeces()}}</span>
-        </div>
-      </template>
-    </van-sku>
     <div class="product-footer">
       <van-goods-action>
-        <van-goods-action-button @click="handleShowSpecs" type="warning" text="加入购物车" />
-        <van-goods-action-button type="danger" @click="handleShowSpecs" text="立即购买" />
+        <van-goods-action-icon v-if="count == 0" icon="cart-o" @click="onClickCar" />
+        <van-goods-action-icon v-if="count > 0" icon="cart-o"
+                               :info="count"
+                               @click="onClickCar" />
+        <van-goods-action-button @click="handleAddToCart(detailForm)" type="warning" text="加入购物车" />
       </van-goods-action>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'product',
   data () {
     return {
       show: false,
-      calculate: 0,
-      stockNum: 0,
-      specsName: '',
       showDetail: false,
       detailForm: {},
       skuObj: {},
-      isSpike: false, // 是否是秒杀商品 默认是false
-      isLike: false, // 是否点赞喜欢
-      current: 0,
-      stepperValue: '',
-      productImages: [],
-      // sku:{},
-      sku: {
-        // 所有sku规格类目与其值的从属关系，比如商品有颜色和尺码两大类规格，颜色下面又有红色和蓝色两个规格值。
-        // 可以理解为一个商品可以有多个规格类目，一个规格类目下可以有多个规格值。
-        tree: [
-          {
-            v: [{}]
-          }
-        ],
-        // 所有 sku 的组合列表，如下是：白色1、白色2、天蓝色1、天蓝色2
-        list: [{}],
-        messages: [],
-        price: '0.00',
-        stock_num: 0, // 商品总库存
-        none_sku: false, // 是否无规格商品
-        hide_stock: false // 是否隐藏剩余库存
-      },
-      goods: {
-        // 商品标题
-        title: '',
-        // 默认商品 sku 缩略图
-        picture: ''
-      },
-      goodsId: ''
+      productImages: []
     }
   },
   created () {
     this.initData()
   },
-
+  computed: {
+    ...mapState({
+      count: state => state.cart.count
+    })
+  },
   methods: {
-    handleIsLise (productId) {
-      this.isLike = !this.isLike
-      this.$http.post(`/api/user/addAttention`, {
-        id: productId,
-        type: 0
-      })
-    },
-    skuSelected ({ skuValue, selectedSku, selectedSkuComb }) {
-      if (selectedSkuComb) {
-        this.specsName = this.specsName + ';' + skuValue.specsName
-        this.calculate = selectedSkuComb.calculate
-        this.stockNum = selectedSkuComb.stock_num
-      } else {
-        this.specsName = ''
-        this.stockNum = 0
-        this.sku.stock_num = 0
-      }
-    },
-    onBuyClicked () {},
-    handleShowSpecs () {
-      this.show = true
-      this.$http
-        .get(
-          `/api/product/chooseSku?productId=${this.$route.query.productId}&clientType=0`
-        )
-        .then(response => {
-          let responseDataList = response.data.content
-          if (responseDataList.length === 1) {
-            this.calculate = responseDataList[0].calculate
-            this.stockNum = responseDataList[0].stock
-          }
-          let skuSpecesTree = []
-          // 先获取所有的规格类型的key
-          skuSpecesTree = responseDataList[0].speces.map(it => {
-            return {
-              k: it.specsName,
-              k_id: it.specsId,
-              v: [],
-              k_s: it.specsId
-            }
-          })
-          // 筛选value
-          let allSpecesArray = []
-          for (let i = 0; i < responseDataList.length; i++) {
-            for (let j = 0; j < responseDataList[i].speces.length; j++) {
-              allSpecesArray.push(
-                JSON.stringify(responseDataList[i].speces[j])
-              )
-            }
-          }
-          let specesArray = []
-          Array.from(new Set(allSpecesArray)).map(it => {
-            specesArray.push(JSON.parse(it))
-          })
-          for (let i = 0; i < skuSpecesTree.length; i++) {
-            for (let j = 0; j < specesArray.length; j++) {
-              if (skuSpecesTree[i].k_id === specesArray[j].specsId) {
-                specesArray[j].name = specesArray[j].specsValue
-                specesArray[j].id = specesArray[j].specsValueId
-                skuSpecesTree[i].v.push(specesArray[j])
-              }
-            }
-          }
-          // 开始筛选list 所有sku的组合列表
-          let templeArray = []
-          templeArray = responseDataList.map((it, i) => {
-            let listObj = {}
-            listObj.stock_num = it.stock
-            listObj.id = it.id
-            listObj.price = it.price
-            listObj.calculate = it.calculate
-            for (let j = 0; j < responseDataList[i].speces.length; j++) {
-              listObj[responseDataList[i].speces[j].specsId] =
-                responseDataList[i].speces[j].specsValueId
-            }
-            return listObj
-          })
-          this.sku.tree = skuSpecesTree
-          this.sku.list = templeArray
-        })
-    },
-    handleProductSpeces () {
-      if (this.detailForm.productSpeces) {
-        return this.detailForm.productSpeces.join(',')
-      }
+    // 点击了购物车
+    onClickCar () {
+      this.$router.push({ name: 'shopCart' })
     },
     initData () {
       this.$http
         .get(
-          `/api/product/info?productId=${this.$route.query.productId}&clientType=0`
+          `/open/product/info?productId=${this.$route.query.productId}`
         )
         .then(response => {
-          this.productImages = response.data.content.productImages
-          this.goods.picture = response.data.content.productImages[0]
+          if (response.data.content.albumPics !== '' && response.data.content.albumPics !== undefined) {
+            this.productImages = response.data.content.albumPics.split(',')
+          }
           this.detailForm = response.data.content
-          this.isLike = Boolean(this.detailForm.attentionFlag)
         })
     },
     handleViewDetail () {
       this.showDetail = true
     },
-
-    handleAddToCart (skuObj) {
-      this.skuObj = skuObj
+    handleAddToCart (goods) {
       this.$http
-        .post(`/api/cart/update`, {
-          quantity: this.skuObj.selectedNum,
-          skuId: skuObj.selectedSkuComb.id
+        .post(`/open/cart/add`, {
+          productId: goods.id,
+          productName: goods.name,
+          productPic: goods.pic,
+          productSubTitle: goods.subTitle,
+          productCategoryId: goods.productCategoryId,
+          price: goods.price,
+          quantity: 1
         })
         .then(response => {
-          if (response.data.code === 0) {
+          if (response.data.code === 200) {
             this.$toast.success({
               message: '添加成功~',
               duration: 1500,
               icon: 'like-o'
             })
+            if (response.data.content === 1) {
+              // 如果是同一个商品多次加入购物车，购物车图标上的数字不用一直上升，只要修改购物车里的数量改变即可
+              this.$store.dispatch('AddCart')
+            }
           } else {
             this.$toast.fail({
               message: response.data.msg,
               duration: 1500
             })
           }
-        })
+        }
+        )
     },
     handleToBuy (skuObj) {
+      // 暂未实现
       this.skuObj = skuObj
       this.$router.push({
         path: '/order/confirmOrder',
@@ -292,15 +117,6 @@ export default {
           quantity: this.skuObj.selectedNum,
           skuId: this.skuObj.selectedSkuComb.id
         }
-      })
-    },
-    handleStoreName () {
-      this.$router.push('/storeDetail')
-    },
-    handleConnectStore () {
-      this.$router.push({
-        path: '/storeDetail',
-        query: { merchantInfoId: this.detailForm.merchantShopId }
       })
     }
   }
